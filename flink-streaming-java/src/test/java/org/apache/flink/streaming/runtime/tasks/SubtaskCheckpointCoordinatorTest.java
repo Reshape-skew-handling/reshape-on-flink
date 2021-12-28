@@ -346,7 +346,7 @@ public class SubtaskCheckpointCoordinatorTest {
             OperatorChain<String, OneInputStreamOperator<String, String>> operatorChain =
                     new OperatorChain<>(
                             task,
-                            StreamTask.createRecordWriterDelegate(streamConfig, mockEnvironment));
+                            StreamTask.createRecordWriterDelegate(streamConfig, mockEnvironment,null));
             long checkpointId = 42L;
             // notify checkpoint aborted before execution.
             subtaskCheckpointCoordinator.notifyCheckpointAborted(
