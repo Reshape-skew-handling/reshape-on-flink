@@ -9,5 +9,5 @@ mvn clean package -Drat.numUnapprovedLicenses=1000 -DskipTests -Dfast -Dchecksty
 ```
 ## Running the project:
 
-This step is the same as Flink's original instruction. However, since Reshape is already a built-in functionality, you can pass `-DenableReShape=true` to flink-conf.yml to enable reshape when starting Flink.
+This step is the same as Flink's original instruction. However, since Reshape is already a built-in functionality of Flink in this repo, you can pass `-DenableReShape=true` to flink-conf.yaml to enable reshape when starting Flink.
 
