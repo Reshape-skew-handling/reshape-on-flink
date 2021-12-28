@@ -19,6 +19,7 @@ package org.apache.flink.streaming.runtime.tasks;
 
 import org.apache.flink.annotation.Internal;
 import org.apache.flink.annotation.VisibleForTesting;
+import org.apache.flink.api.common.TaskInfo;
 import org.apache.flink.configuration.TaskManagerOptions;
 import org.apache.flink.core.fs.CloseableRegistry;
 import org.apache.flink.core.fs.Path;
@@ -329,7 +330,6 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>> extends Ab
         this.configuration = new StreamConfig(getTaskConfiguration());
         String id = getEnvironment().getJobVertexId().toString();
         TaskInfo info = getEnvironment().getTaskInfo();
-        logName = "exampleJob-"+id.substring(id.length()-4)+"-"+info.getIndexOfThisSubtask();
         workerSim = new WorkerSimulator(id.substring(id.length()-4)+"-"+info.getIndexOfThisSubtask());
         this.recordWriter = createRecordWriterDelegate(configuration, environment, workerSim);
         this.actionExecutor = Preconditions.checkNotNull(actionExecutor);
