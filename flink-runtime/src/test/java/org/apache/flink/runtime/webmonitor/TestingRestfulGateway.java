@@ -33,6 +33,7 @@ import org.apache.flink.runtime.messages.webmonitor.JobsOverview;
 import org.apache.flink.runtime.messages.webmonitor.MultipleJobsDetails;
 import org.apache.flink.runtime.operators.coordination.CoordinationRequest;
 import org.apache.flink.runtime.operators.coordination.CoordinationResponse;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.scheduler.ExecutionGraphInfo;
 import org.apache.flink.util.SerializedValue;
 import org.apache.flink.util.function.TriFunction;
@@ -205,6 +206,11 @@ public class TestingRestfulGateway implements RestfulGateway {
     @Override
     public CompletableFuture<Acknowledge> cancelJob(JobID jobId, Time timeout) {
         return cancelJobFunction.apply(jobId);
+    }
+
+    @Override
+    public CompletableFuture<Acknowledge> sendCustomMessage(JobID jobId, Time timeout, WorkerSimulator.CustomMessage message) {
+        return null;
     }
 
     @Override

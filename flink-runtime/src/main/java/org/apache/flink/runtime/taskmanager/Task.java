@@ -68,6 +68,7 @@ import org.apache.flink.runtime.metrics.groups.TaskMetricGroup;
 import org.apache.flink.runtime.operators.coordination.OperatorEvent;
 import org.apache.flink.runtime.operators.coordination.TaskNotRunningException;
 import org.apache.flink.runtime.query.TaskKvStateRegistry;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.security.FlinkSecurityManager;
 import org.apache.flink.runtime.shuffle.ShuffleEnvironment;
 import org.apache.flink.runtime.shuffle.ShuffleIOOwnerContext;
@@ -935,6 +936,14 @@ public class Task
                         executionId,
                         t);
             }
+        }
+    }
+
+
+    public void passMessage(WorkerSimulator.CustomMessage customMessage){
+        System.out.println("Task receives custom message! current thread = "+Thread.currentThread().getName()+" "+Thread.currentThread().getId());
+        if(invokable != null) {
+            invokable.passMessage(customMessage);
         }
     }
 

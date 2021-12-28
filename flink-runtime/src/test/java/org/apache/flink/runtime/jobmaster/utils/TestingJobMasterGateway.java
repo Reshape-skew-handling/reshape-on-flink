@@ -46,6 +46,7 @@ import org.apache.flink.runtime.operators.coordination.CoordinationResponse;
 import org.apache.flink.runtime.operators.coordination.OperatorEvent;
 import org.apache.flink.runtime.query.KvStateLocation;
 import org.apache.flink.runtime.registration.RegistrationResponse;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.resourcemanager.ResourceManagerId;
 import org.apache.flink.runtime.scheduler.ExecutionGraphInfo;
 import org.apache.flink.runtime.slots.ResourceRequirement;
@@ -313,6 +314,13 @@ public class TestingJobMasterGateway implements JobMasterGateway {
     @Override
     public CompletableFuture<Acknowledge> cancel(Time timeout) {
         return cancelFunction.get();
+    }
+
+    @Override
+    public CompletableFuture<Acknowledge> sendCustomMessage(
+            Time timeout,
+            WorkerSimulator.CustomMessage message) {
+        return null;
     }
 
     @Override

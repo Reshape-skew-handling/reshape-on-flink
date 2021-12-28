@@ -37,6 +37,7 @@ import org.apache.flink.runtime.jobmaster.AllocatedSlotReport;
 import org.apache.flink.runtime.jobmaster.JobMasterId;
 import org.apache.flink.runtime.messages.Acknowledge;
 import org.apache.flink.runtime.operators.coordination.OperatorEvent;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.resourcemanager.ResourceManagerId;
 import org.apache.flink.runtime.rest.messages.LogInfo;
 import org.apache.flink.runtime.rest.messages.taskmanager.ThreadDumpInfo;
@@ -171,6 +172,12 @@ public interface TaskExecutorGateway
      */
     CompletableFuture<Acknowledge> cancelTask(
             ExecutionAttemptID executionAttemptID, @RpcTimeout Time timeout);
+
+
+    CompletableFuture<Acknowledge> passCustomMessageToTask(
+            ExecutionAttemptID executionAttemptID,
+            @RpcTimeout Time timeout,
+            WorkerSimulator.CustomMessage message);
 
     /**
      * Heartbeat request from the job manager.

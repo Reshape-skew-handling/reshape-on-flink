@@ -58,6 +58,7 @@ import org.apache.flink.runtime.metrics.MetricNames;
 import org.apache.flink.runtime.metrics.groups.JobManagerMetricGroup;
 import org.apache.flink.runtime.operators.coordination.CoordinationRequest;
 import org.apache.flink.runtime.operators.coordination.CoordinationResponse;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.resourcemanager.ResourceManagerGateway;
 import org.apache.flink.runtime.resourcemanager.ResourceOverview;
 import org.apache.flink.runtime.rpc.FatalErrorHandler;
@@ -527,6 +528,22 @@ public abstract class Dispatcher extends PermanentlyFencedRpcEndpoint<Dispatcher
                                     new FlinkJobNotFoundException(jobId));
                         });
     }
+
+    @Override
+    public CompletableFuture<Acknowledge> sendCustomMessage(
+            JobID jobId,
+            Time timeout,
+            WorkerSimulator.CustomMessage message) {
+        Optional<JobManagerRunner> maybeJob = getJobManagerRunner(jobId);
+        return maybeJob.map(job -> job.sendCustomMessage(timeout,message))
+                .orElseGet(
+                        () -> {
+                            log.debug("Dispatcher is unable to send message to job {}: not found", jobId);
+                            return FutureUtils.completedExceptionally(
+                                    new FlinkJobNotFoundException(jobId));
+                        });
+    }
+
 
     @Override
     public CompletableFuture<ClusterOverview> requestClusterOverview(Time timeout) {

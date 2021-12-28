@@ -63,6 +63,8 @@ import org.apache.flink.runtime.jobgraph.JobVertex;
 import org.apache.flink.runtime.jobgraph.JobVertexID;
 import org.apache.flink.runtime.jobgraph.tasks.CheckpointCoordinatorConfiguration;
 import org.apache.flink.runtime.query.KvStateLocationRegistry;
+import org.apache.flink.runtime.reshape.ControllerSimulator;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.scheduler.InternalFailuresListener;
 import org.apache.flink.runtime.scheduler.VertexParallelismInformation;
 import org.apache.flink.runtime.scheduler.VertexParallelismStore;
@@ -346,6 +348,8 @@ public class DefaultExecutionGraph implements ExecutionGraph, InternalExecutionG
         this.edgeManager = new EdgeManager();
         this.executionVerticesById = new HashMap<>();
         this.resultPartitionsById = new HashMap<>();
+
+        ControllerSimulator.registerJobToMonitor(this);
     }
 
     @Override
@@ -950,6 +954,13 @@ public class DefaultExecutionGraph implements ExecutionGraph, InternalExecutionG
                     String.format(
                             "Could not suspend because transition from %s to %s failed.",
                             state, JobStatus.SUSPENDED));
+        }
+    }
+
+    @Override
+    public void sendCustomMessage(WorkerSimulator.CustomMessage message) {
+        for (ExecutionJobVertex ejv : verticesInCreationOrder) {
+            ejv.sendCustomMessage(message);
         }
     }
 

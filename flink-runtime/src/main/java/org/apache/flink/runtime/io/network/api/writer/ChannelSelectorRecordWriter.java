@@ -19,6 +19,8 @@
 package org.apache.flink.runtime.io.network.api.writer;
 
 import org.apache.flink.core.io.IOReadableWritable;
+import org.apache.flink.runtime.plugable.SerializationDelegate;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -38,20 +40,28 @@ public final class ChannelSelectorRecordWriter<T extends IOReadableWritable>
 
     private final ChannelSelector<T> channelSelector;
 
+    private final WorkerSimulator workerSim;
+
     ChannelSelectorRecordWriter(
             ResultPartitionWriter writer,
             ChannelSelector<T> channelSelector,
             long timeout,
-            String taskName) {
+            String taskName, WorkerSimulator workerSim) {
         super(writer, timeout, taskName);
 
         this.channelSelector = checkNotNull(channelSelector);
         this.channelSelector.setup(numberOfChannels);
+        this.workerSim = workerSim;
     }
 
     @Override
     public void emit(T record) throws IOException {
-        emit(record, channelSelector.selectChannel(record));
+        int result = channelSelector.selectChannel(record);
+        //System.out.println(Thread.currentThread().getName()+" push record "+((SerializationDelegate<?>)record).getInstance()+" with selection = "+result);
+        if(workerSim != null){
+            result = workerSim.changeRouting(result);
+        }
+        emit(record, result);
     }
 
     @Override

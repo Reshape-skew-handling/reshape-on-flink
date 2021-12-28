@@ -24,6 +24,7 @@ import org.apache.flink.api.common.time.Time;
 import org.apache.flink.core.testutils.OneShotLatch;
 import org.apache.flink.runtime.messages.Acknowledge;
 import org.apache.flink.runtime.messages.webmonitor.JobDetails;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.scheduler.ExecutionGraphInfo;
 import org.apache.flink.util.Preconditions;
 
@@ -83,6 +84,11 @@ public class TestingJobManagerRunner implements JobManagerRunner {
     @Override
     public CompletableFuture<Acknowledge> cancel(Time timeout) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public CompletableFuture<Acknowledge> sendCustomMessage(Time timeout, WorkerSimulator.CustomMessage message) {
+        return null;
     }
 
     @Override

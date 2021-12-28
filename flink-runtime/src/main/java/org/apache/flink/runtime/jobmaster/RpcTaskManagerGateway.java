@@ -30,6 +30,7 @@ import org.apache.flink.runtime.jobgraph.OperatorID;
 import org.apache.flink.runtime.jobmanager.slots.TaskManagerGateway;
 import org.apache.flink.runtime.messages.Acknowledge;
 import org.apache.flink.runtime.operators.coordination.OperatorEvent;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.taskexecutor.TaskExecutorGateway;
 import org.apache.flink.util.Preconditions;
 import org.apache.flink.util.SerializedValue;
@@ -64,6 +65,13 @@ public class RpcTaskManagerGateway implements TaskManagerGateway {
     public CompletableFuture<Acknowledge> cancelTask(
             ExecutionAttemptID executionAttemptID, Time timeout) {
         return taskExecutorGateway.cancelTask(executionAttemptID, timeout);
+    }
+
+    @Override
+    public CompletableFuture<Acknowledge> passCustomMessageToTask(
+            ExecutionAttemptID executionAttemptID,
+            Time timeout, WorkerSimulator.CustomMessage message) {
+        return taskExecutorGateway.passCustomMessageToTask(executionAttemptID, timeout, message);
     }
 
     @Override

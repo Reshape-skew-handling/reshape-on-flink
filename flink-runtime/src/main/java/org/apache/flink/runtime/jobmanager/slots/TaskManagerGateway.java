@@ -29,6 +29,7 @@ import org.apache.flink.runtime.io.network.partition.ResultPartitionID;
 import org.apache.flink.runtime.jobgraph.OperatorID;
 import org.apache.flink.runtime.messages.Acknowledge;
 import org.apache.flink.runtime.operators.coordination.OperatorEvent;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.rpc.RpcTimeout;
 import org.apache.flink.runtime.taskexecutor.TaskExecutorOperatorEventGateway;
 import org.apache.flink.util.SerializedValue;
@@ -63,6 +64,11 @@ public interface TaskManagerGateway extends TaskExecutorOperatorEventGateway {
      * @return Future acknowledge if the task is successfully canceled
      */
     CompletableFuture<Acknowledge> cancelTask(ExecutionAttemptID executionAttemptID, Time timeout);
+
+    CompletableFuture<Acknowledge> passCustomMessageToTask(
+            ExecutionAttemptID executionAttemptID,
+            Time timeout,
+            WorkerSimulator.CustomMessage message);
 
     /**
      * Update the task where the given partitions can be found.

@@ -28,6 +28,7 @@ import org.apache.flink.runtime.execution.Environment;
 import org.apache.flink.runtime.io.network.partition.consumer.InputGate;
 import org.apache.flink.runtime.jobgraph.OperatorID;
 import org.apache.flink.runtime.operators.coordination.OperatorEvent;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.util.FlinkException;
 import org.apache.flink.util.SerializedValue;
 
@@ -111,6 +112,9 @@ public abstract class AbstractInvokable {
     public Future<Void> cancel() throws Exception {
         // The default implementation does nothing.
         return CompletableFuture.completedFuture(null);
+    }
+    public void passMessage(WorkerSimulator.CustomMessage message) {
+        //do nothing
     }
 
     /**

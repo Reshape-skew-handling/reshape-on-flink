@@ -74,6 +74,7 @@ import org.apache.flink.runtime.operators.coordination.OperatorCoordinatorHolder
 import org.apache.flink.runtime.operators.coordination.OperatorEvent;
 import org.apache.flink.runtime.query.KvStateLocation;
 import org.apache.flink.runtime.query.UnknownKvStateLocation;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.scheduler.exceptionhistory.FailureHandlingResultSnapshot;
 import org.apache.flink.runtime.scheduler.exceptionhistory.RootExceptionHistoryEntry;
 import org.apache.flink.runtime.scheduler.stopwithsavepoint.StopWithSavepointTerminationHandlerImpl;
@@ -304,6 +305,12 @@ public abstract class SchedulerBase implements SchedulerNG, CheckpointScheduling
         }
 
         return store;
+    }
+
+
+    @Override
+    public void sendCustomMessage(WorkerSimulator.CustomMessage message) {
+        executionGraph.sendCustomMessage(message);
     }
 
     /**

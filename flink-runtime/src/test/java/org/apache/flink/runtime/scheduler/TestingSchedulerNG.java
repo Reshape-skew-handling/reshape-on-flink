@@ -40,6 +40,7 @@ import org.apache.flink.runtime.operators.coordination.CoordinationRequest;
 import org.apache.flink.runtime.operators.coordination.CoordinationResponse;
 import org.apache.flink.runtime.operators.coordination.OperatorEvent;
 import org.apache.flink.runtime.query.KvStateLocation;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.state.KeyGroupRange;
 
 import javax.annotation.Nullable;
@@ -88,6 +89,11 @@ public class TestingSchedulerNG implements SchedulerNG {
 
     @Override
     public void cancel() {}
+
+    @Override
+    public void sendCustomMessage(WorkerSimulator.CustomMessage message) {
+
+    }
 
     @Override
     public CompletableFuture<JobStatus> getJobTerminationFuture() {

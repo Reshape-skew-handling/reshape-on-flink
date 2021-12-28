@@ -47,6 +47,7 @@ import org.apache.flink.runtime.jobmaster.LogicalSlot;
 import org.apache.flink.runtime.messages.Acknowledge;
 import org.apache.flink.runtime.operators.coordination.OperatorEvent;
 import org.apache.flink.runtime.operators.coordination.TaskNotRunningException;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.scheduler.strategy.ConsumerVertexGroup;
 import org.apache.flink.runtime.scheduler.strategy.ExecutionVertexID;
 import org.apache.flink.runtime.shuffle.NettyShuffleMaster;
@@ -1002,6 +1003,16 @@ public class Execution
         } else {
             return false;
         }
+    }
+
+    public CompletableFuture<?> sendCustomMessageRPCCall(WorkerSimulator.CustomMessage message){
+        final LogicalSlot slot = assignedResource;
+
+        if (slot != null) {
+            final TaskManagerGateway taskManagerGateway = slot.getTaskManagerGateway();
+            return taskManagerGateway.passCustomMessageToTask(attemptId, rpcTimeout, message);
+        }
+        return FutureUtils.completedVoidFuture();
     }
 
     void completeCancelling() {

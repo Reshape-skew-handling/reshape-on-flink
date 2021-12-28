@@ -37,6 +37,7 @@ import org.apache.flink.runtime.jobmaster.JobMasterId;
 import org.apache.flink.runtime.messages.Acknowledge;
 import org.apache.flink.runtime.messages.TaskThreadInfoResponse;
 import org.apache.flink.runtime.operators.coordination.OperatorEvent;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.resourcemanager.ResourceManagerId;
 import org.apache.flink.runtime.rest.messages.LogInfo;
 import org.apache.flink.runtime.rest.messages.taskmanager.ThreadDumpInfo;
@@ -147,6 +148,13 @@ public class TaskExecutorGatewayDecoratorBase implements TaskExecutorGateway {
     public CompletableFuture<Acknowledge> cancelTask(
             ExecutionAttemptID executionAttemptID, Time timeout) {
         return originalGateway.cancelTask(executionAttemptID, timeout);
+    }
+
+    @Override
+    public CompletableFuture<Acknowledge> passCustomMessageToTask(
+            ExecutionAttemptID executionAttemptID,
+            Time timeout, WorkerSimulator.CustomMessage message) {
+        return originalGateway.passCustomMessageToTask(executionAttemptID, timeout, message);
     }
 
     @Override

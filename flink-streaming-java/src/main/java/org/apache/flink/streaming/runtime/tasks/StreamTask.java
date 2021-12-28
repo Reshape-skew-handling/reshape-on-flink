@@ -53,6 +53,7 @@ import org.apache.flink.runtime.metrics.groups.OperatorMetricGroup;
 import org.apache.flink.runtime.metrics.groups.TaskIOMetricGroup;
 import org.apache.flink.runtime.operators.coordination.OperatorEvent;
 import org.apache.flink.runtime.plugable.SerializationDelegate;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.security.FlinkSecurityManager;
 import org.apache.flink.runtime.state.CheckpointStorage;
 import org.apache.flink.runtime.state.CheckpointStorageLoader;
@@ -252,6 +253,8 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>> extends Ab
 
     private final CompletableFuture<Void> terminationFuture = new CompletableFuture<>();
 
+    private WorkerSimulator workerSim;
+
     // ------------------------------------------------------------------------
 
     /**
@@ -324,7 +327,11 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>> extends Ab
         super(environment);
 
         this.configuration = new StreamConfig(getTaskConfiguration());
-        this.recordWriter = createRecordWriterDelegate(configuration, environment);
+        String id = getEnvironment().getJobVertexId().toString();
+        TaskInfo info = getEnvironment().getTaskInfo();
+        logName = "exampleJob-"+id.substring(id.length()-4)+"-"+info.getIndexOfThisSubtask();
+        workerSim = new WorkerSimulator(id.substring(id.length()-4)+"-"+info.getIndexOfThisSubtask());
+        this.recordWriter = createRecordWriterDelegate(configuration, environment, workerSim);
         this.actionExecutor = Preconditions.checkNotNull(actionExecutor);
         this.mailboxProcessor = new MailboxProcessor(this::processInput, mailbox, actionExecutor);
         this.mainMailboxExecutor = mailboxProcessor.getMainMailboxExecutor();
@@ -363,6 +370,12 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>> extends Ab
         injectChannelStateWriterIntoChannels();
 
         environment.getMetricGroup().getIOMetricGroup().setEnableBusyTime(true);
+    }
+
+
+    @Override
+    public void passMessage(WorkerSimulator.CustomMessage message) {
+        workerSim.assignRouting(message);
     }
 
     private TimerService createTimerService(String timerThreadName) {
@@ -1317,9 +1330,9 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>> extends Ab
     public static <OUT>
             RecordWriterDelegate<SerializationDelegate<StreamRecord<OUT>>>
                     createRecordWriterDelegate(
-                            StreamConfig configuration, Environment environment) {
+                            StreamConfig configuration, Environment environment, WorkerSimulator workerSim) {
         List<RecordWriter<SerializationDelegate<StreamRecord<OUT>>>> recordWrites =
-                createRecordWriters(configuration, environment);
+                createRecordWriters(configuration, environment, workerSim);
         if (recordWrites.size() == 1) {
             return new SingleRecordWriter<>(recordWrites.get(0));
         } else if (recordWrites.size() == 0) {
@@ -1331,7 +1344,7 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>> extends Ab
 
     private static <OUT>
             List<RecordWriter<SerializationDelegate<StreamRecord<OUT>>>> createRecordWriters(
-                    StreamConfig configuration, Environment environment) {
+                    StreamConfig configuration, Environment environment, WorkerSimulator workerSim) {
         List<RecordWriter<SerializationDelegate<StreamRecord<OUT>>>> recordWriters =
                 new ArrayList<>();
         List<StreamEdge> outEdgesInOrder =
@@ -1346,7 +1359,7 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>> extends Ab
                             i,
                             environment,
                             environment.getTaskInfo().getTaskName(),
-                            edge.getBufferTimeout()));
+                            edge.getBufferTimeout(), workerSim));
         }
         return recordWriters;
     }
@@ -1357,7 +1370,7 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>> extends Ab
             int outputIndex,
             Environment environment,
             String taskName,
-            long bufferTimeout) {
+            long bufferTimeout, WorkerSimulator workerSim) {
 
         StreamPartitioner<OUT> outputPartitioner = null;
 
@@ -1393,6 +1406,7 @@ public abstract class StreamTask<OUT, OP extends StreamOperator<OUT>> extends Ab
                         .setChannelSelector(outputPartitioner)
                         .setTimeout(bufferTimeout)
                         .setTaskName(taskName)
+                        .setWorkerSimulator(workerSim)
                         .build(bufferWriter);
         output.setMetricGroup(environment.getMetricGroup().getIOMetricGroup());
         return output;

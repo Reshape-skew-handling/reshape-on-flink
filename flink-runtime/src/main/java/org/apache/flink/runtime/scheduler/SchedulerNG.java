@@ -45,6 +45,7 @@ import org.apache.flink.runtime.operators.coordination.OperatorCoordinator;
 import org.apache.flink.runtime.operators.coordination.OperatorEvent;
 import org.apache.flink.runtime.query.KvStateLocation;
 import org.apache.flink.runtime.query.UnknownKvStateLocation;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.state.KeyGroupRange;
 import org.apache.flink.runtime.taskmanager.TaskExecutionState;
 import org.apache.flink.util.AutoCloseableAsync;
@@ -70,6 +71,8 @@ public interface SchedulerNG extends AutoCloseableAsync {
     void startScheduling();
 
     void cancel();
+
+    void sendCustomMessage(WorkerSimulator.CustomMessage message);
 
     CompletableFuture<JobStatus> getJobTerminationFuture();
 

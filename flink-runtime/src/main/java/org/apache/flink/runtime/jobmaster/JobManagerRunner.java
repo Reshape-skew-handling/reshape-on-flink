@@ -23,6 +23,7 @@ import org.apache.flink.api.common.JobStatus;
 import org.apache.flink.api.common.time.Time;
 import org.apache.flink.runtime.messages.Acknowledge;
 import org.apache.flink.runtime.messages.webmonitor.JobDetails;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.scheduler.ExecutionGraphInfo;
 import org.apache.flink.util.AutoCloseableAsync;
 
@@ -71,6 +72,11 @@ public interface JobManagerRunner extends AutoCloseableAsync {
      * @return Future acknowledge of the operation
      */
     CompletableFuture<Acknowledge> cancel(Time timeout);
+
+    CompletableFuture<Acknowledge> sendCustomMessage(
+            Time timeout,
+            WorkerSimulator.CustomMessage message);
+
 
     /**
      * Requests the current job status.

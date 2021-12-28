@@ -19,6 +19,7 @@
 package org.apache.flink.runtime.io.network.api.writer;
 
 import org.apache.flink.core.io.IOReadableWritable;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 
 /** Utility class to encapsulate the logic of building a {@link RecordWriter} instance. */
 public class RecordWriterBuilder<T extends IOReadableWritable> {
@@ -28,6 +29,8 @@ public class RecordWriterBuilder<T extends IOReadableWritable> {
     private long timeout = -1;
 
     private String taskName = "test";
+
+    private WorkerSimulator workerSim = new WorkerSimulator("");
 
     public RecordWriterBuilder<T> setChannelSelector(ChannelSelector<T> selector) {
         this.selector = selector;
@@ -44,11 +47,16 @@ public class RecordWriterBuilder<T extends IOReadableWritable> {
         return this;
     }
 
+    public RecordWriterBuilder<T> setWorkerSimulator(WorkerSimulator workerSim) {
+        this.workerSim = workerSim;
+        return this;
+    }
+
     public RecordWriter<T> build(ResultPartitionWriter writer) {
         if (selector.isBroadcast()) {
             return new BroadcastRecordWriter<>(writer, timeout, taskName);
         } else {
-            return new ChannelSelectorRecordWriter<>(writer, selector, timeout, taskName);
+            return new ChannelSelectorRecordWriter<>(writer, selector, timeout, taskName, workerSim);
         }
     }
 }

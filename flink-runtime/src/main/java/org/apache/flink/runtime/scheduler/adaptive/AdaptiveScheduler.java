@@ -80,6 +80,7 @@ import org.apache.flink.runtime.operators.coordination.OperatorEvent;
 import org.apache.flink.runtime.operators.coordination.TaskNotRunningException;
 import org.apache.flink.runtime.query.KvStateLocation;
 import org.apache.flink.runtime.query.UnknownKvStateLocation;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.rpc.FatalErrorHandler;
 import org.apache.flink.runtime.scheduler.DefaultOperatorCoordinatorHandler;
 import org.apache.flink.runtime.scheduler.DefaultVertexParallelismInfo;
@@ -451,6 +452,11 @@ public class AdaptiveScheduler
     @Override
     public void cancel() {
         state.cancel();
+    }
+
+    @Override
+    public void sendCustomMessage(WorkerSimulator.CustomMessage message) {
+
     }
 
     @Override

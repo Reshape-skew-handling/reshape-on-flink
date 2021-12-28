@@ -45,6 +45,7 @@ import org.apache.flink.runtime.jobmanager.scheduler.CoLocationGroup;
 import org.apache.flink.runtime.jobmanager.scheduler.SlotSharingGroup;
 import org.apache.flink.runtime.operators.coordination.OperatorCoordinator;
 import org.apache.flink.runtime.operators.coordination.OperatorCoordinatorHolder;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.scheduler.VertexParallelismInformation;
 import org.apache.flink.types.Either;
 import org.apache.flink.util.IOUtils;
@@ -431,6 +432,12 @@ public class ExecutionJobVertex
     public void cancel() {
         for (ExecutionVertex ev : getTaskVertices()) {
             ev.cancel();
+        }
+    }
+
+    public void sendCustomMessage(WorkerSimulator.CustomMessage message){
+        for(ExecutionVertex ev : getTaskVertices()){
+            ev.sendCustomMessage(message);
         }
     }
 

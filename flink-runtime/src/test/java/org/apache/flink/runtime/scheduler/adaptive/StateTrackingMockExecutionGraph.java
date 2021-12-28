@@ -51,6 +51,7 @@ import org.apache.flink.runtime.jobgraph.JobVertex;
 import org.apache.flink.runtime.jobgraph.JobVertexID;
 import org.apache.flink.runtime.jobgraph.tasks.CheckpointCoordinatorConfiguration;
 import org.apache.flink.runtime.query.KvStateLocationRegistry;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.scheduler.InternalFailuresListener;
 import org.apache.flink.runtime.scheduler.strategy.SchedulingTopology;
 import org.apache.flink.runtime.state.CheckpointStorage;
@@ -133,6 +134,11 @@ class StateTrackingMockExecutionGraph implements ExecutionGraph {
     @Override
     public void suspend(Throwable suspensionCause) {
         transitionToState(JobStatus.SUSPENDED);
+    }
+
+    @Override
+    public void sendCustomMessage(WorkerSimulator.CustomMessage message) {
+
     }
 
     @Override

@@ -67,6 +67,7 @@ import org.apache.flink.runtime.query.UnknownKvStateLocation;
 import org.apache.flink.runtime.registration.RegisteredRpcConnection;
 import org.apache.flink.runtime.registration.RegistrationResponse;
 import org.apache.flink.runtime.registration.RetryingRegistration;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.resourcemanager.ResourceManagerGateway;
 import org.apache.flink.runtime.resourcemanager.ResourceManagerId;
 import org.apache.flink.runtime.rpc.FatalErrorHandler;
@@ -416,6 +417,15 @@ public class JobMaster extends PermanentlyFencedRpcEndpoint<JobMasterId>
     public CompletableFuture<Acknowledge> cancel(Time timeout) {
         schedulerNG.cancel();
 
+        return CompletableFuture.completedFuture(Acknowledge.get());
+    }
+
+    @Override
+    public CompletableFuture<Acknowledge> sendCustomMessage(
+            Time timeout,
+            WorkerSimulator.CustomMessage message) {
+        System.out.println("JobMaster receives custom message! current thread = "+Thread.currentThread().getName()+" "+Thread.currentThread().getId());
+        schedulerNG.sendCustomMessage(message);
         return CompletableFuture.completedFuture(Acknowledge.get());
     }
 

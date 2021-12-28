@@ -29,6 +29,7 @@ import org.apache.flink.runtime.leaderelection.LeaderContender;
 import org.apache.flink.runtime.leaderelection.LeaderElectionService;
 import org.apache.flink.runtime.messages.Acknowledge;
 import org.apache.flink.runtime.messages.webmonitor.JobDetails;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.rpc.FatalErrorHandler;
 import org.apache.flink.runtime.scheduler.ExecutionGraphInfo;
 import org.apache.flink.util.ExceptionUtils;
@@ -194,6 +195,24 @@ public class JobMasterServiceLeadershipRunner implements JobManagerRunner, Leade
                                 throw new CompletionException(
                                         new FlinkException(
                                                 "Cancellation failed.",
+                                                ExceptionUtils.stripCompletionException(e)));
+                            });
+        }
+    }
+
+    @Override
+    public CompletableFuture<Acknowledge> sendCustomMessage(
+            Time timeout,
+            WorkerSimulator.CustomMessage message) {
+        synchronized (lock) {
+            hasCurrentLeaderBeenCancelled = true;
+            return getJobMasterGateway()
+                    .thenCompose(jobMasterGateway -> jobMasterGateway.sendCustomMessage(timeout, message))
+                    .exceptionally(
+                            e -> {
+                                throw new CompletionException(
+                                        new FlinkException(
+                                                "send failed.",
                                                 ExceptionUtils.stripCompletionException(e)));
                             });
         }

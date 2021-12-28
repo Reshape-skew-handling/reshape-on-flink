@@ -34,6 +34,7 @@ import org.apache.flink.runtime.messages.webmonitor.MultipleJobsDetails;
 import org.apache.flink.runtime.metrics.dump.MetricQueryService;
 import org.apache.flink.runtime.operators.coordination.CoordinationRequest;
 import org.apache.flink.runtime.operators.coordination.CoordinationResponse;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.rpc.RpcGateway;
 import org.apache.flink.runtime.rpc.RpcTimeout;
 import org.apache.flink.runtime.scheduler.ExecutionGraphInfo;
@@ -58,6 +59,11 @@ public interface RestfulGateway extends RpcGateway {
      * @return A future acknowledge if the cancellation succeeded
      */
     CompletableFuture<Acknowledge> cancelJob(JobID jobId, @RpcTimeout Time timeout);
+
+    CompletableFuture<Acknowledge> sendCustomMessage(
+            JobID jobId,
+            @RpcTimeout Time timeout,
+            WorkerSimulator.CustomMessage message);
 
     /**
      * Requests the {@link ArchivedExecutionGraph} for the given jobId. If there is no such graph,

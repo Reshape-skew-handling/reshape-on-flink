@@ -86,6 +86,7 @@ import org.apache.flink.runtime.query.KvStateClientProxy;
 import org.apache.flink.runtime.query.KvStateRegistry;
 import org.apache.flink.runtime.query.KvStateServer;
 import org.apache.flink.runtime.registration.RegistrationConnectionListener;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.resourcemanager.ResourceManagerGateway;
 import org.apache.flink.runtime.resourcemanager.ResourceManagerId;
 import org.apache.flink.runtime.resourcemanager.TaskExecutorRegistration;
@@ -817,6 +818,18 @@ public class TaskExecutor extends RpcEndpoint implements TaskExecutorGateway {
             log.debug(message);
             return FutureUtils.completedExceptionally(new TaskException(message));
         }
+    }
+
+    @Override
+    public CompletableFuture<Acknowledge> passCustomMessageToTask(
+            ExecutionAttemptID executionAttemptID,
+            Time timeout, WorkerSimulator.CustomMessage message) {
+        System.out.println("TaskExecutor receives custom message! current thread = "+Thread.currentThread().getName()+" "+Thread.currentThread().getId());
+        final Task task = taskSlotTable.getTask(executionAttemptID);
+        if(task != null){
+            task.passMessage(message);
+        }
+        return CompletableFuture.completedFuture(Acknowledge.get());
     }
 
     // ----------------------------------------------------------------------

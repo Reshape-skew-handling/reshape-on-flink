@@ -39,6 +39,7 @@ import org.apache.flink.runtime.messages.webmonitor.JobDetails;
 import org.apache.flink.runtime.operators.coordination.CoordinationRequest;
 import org.apache.flink.runtime.operators.coordination.CoordinationResponse;
 import org.apache.flink.runtime.registration.RegistrationResponse;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.runtime.resourcemanager.ResourceManagerId;
 import org.apache.flink.runtime.rpc.FencedRpcGateway;
 import org.apache.flink.runtime.rpc.RpcTimeout;
@@ -70,6 +71,11 @@ public interface JobMasterGateway
      * @return Future acknowledge of the operation
      */
     CompletableFuture<Acknowledge> cancel(@RpcTimeout Time timeout);
+
+    CompletableFuture<Acknowledge> sendCustomMessage(
+            @RpcTimeout Time timeout,
+            WorkerSimulator.CustomMessage message);
+
 
     /**
      * Updates the task execution state for a given task.

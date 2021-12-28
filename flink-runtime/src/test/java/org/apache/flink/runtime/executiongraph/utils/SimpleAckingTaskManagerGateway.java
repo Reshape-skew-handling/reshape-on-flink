@@ -30,6 +30,7 @@ import org.apache.flink.runtime.jobgraph.OperatorID;
 import org.apache.flink.runtime.jobmanager.slots.TaskManagerGateway;
 import org.apache.flink.runtime.messages.Acknowledge;
 import org.apache.flink.runtime.operators.coordination.OperatorEvent;
+import org.apache.flink.runtime.reshape.WorkerSimulator;
 import org.apache.flink.util.SerializedValue;
 import org.apache.flink.util.function.TriConsumer;
 
@@ -109,6 +110,13 @@ public class SimpleAckingTaskManagerGateway implements TaskManagerGateway {
             ExecutionAttemptID executionAttemptID, Time timeout) {
         cancelConsumer.accept(executionAttemptID);
         return CompletableFuture.completedFuture(Acknowledge.get());
+    }
+
+    @Override
+    public CompletableFuture<Acknowledge> passCustomMessageToTask(
+            ExecutionAttemptID executionAttemptID,
+            Time timeout, WorkerSimulator.CustomMessage message) {
+        return null;
     }
 
     @Override

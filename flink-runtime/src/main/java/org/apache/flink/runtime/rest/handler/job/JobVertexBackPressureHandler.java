@@ -22,6 +22,7 @@ import org.apache.flink.api.common.JobID;
 import org.apache.flink.api.common.time.Time;
 import org.apache.flink.runtime.jobgraph.JobVertexID;
 import org.apache.flink.runtime.metrics.MetricNames;
+import org.apache.flink.runtime.reshape.ControllerSimulator;
 import org.apache.flink.runtime.rest.handler.AbstractRestHandler;
 import org.apache.flink.runtime.rest.handler.HandlerRequest;
 import org.apache.flink.runtime.rest.handler.RestHandlerException;
@@ -64,6 +65,7 @@ public class JobVertexBackPressureHandler
                     messageHeaders,
             MetricFetcher metricFetcher) {
         super(leaderRetriever, timeout, responseHeaders, messageHeaders);
+        ControllerSimulator.setMetricFetcher(metricFetcher);
         this.metricFetcher = metricFetcher;
     }
 
