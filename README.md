@@ -1,5 +1,5 @@
 # Reshape on Apache Flink
-This is the code for the implementation of Reshape on Apache Flink. More details about Flink and how to build it can be found at [Flink's github](https://github.com/apache/flink).
+This is the code for the implementation of Reshape on Apache Flink 1.13. More details about Flink and how to build it can be found at [Flink's github](https://github.com/apache/flink).
 
 ## Building the project
 ```console
